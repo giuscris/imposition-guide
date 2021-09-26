@@ -1,0 +1,104 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-y: scroll;
+}
+
+input,
+select,
+details[open] summary {
+    margin-bottom: 0.75rem;
+}
+
+input[type="number"] {
+    width: 2.5rem;
+}
+
+select {
+    font-size: 0.875rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+fieldset {
+    padding: 0.5rem;
+    margin: 0 0 0.75rem;
+    border-style: solid;
+}
+
+fieldset input {
+    margin-bottom: 0;
+}
+
+u {
+    border-bottom: 1px solid black;
+    text-decoration: none;
+}
+
+.header {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.controls {
+    margin-bottom: 1rem;
+    background-color: #efefef;
+    padding: 2rem;
+    border-radius: 4px;
+    min-width: 15rem;
+}
+
+.signature-number {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+}
+
+.signature {
+    margin-bottom: 1rem;
+    clear: left;
+}
+
+.sheet {
+    display: inline-block;
+    margin-right: 3rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.leaf {
+    border: 1px solid #000;
+    float: left;
+    table-layout: fixed;
+    margin-right: 0.75rem;
+}
+
+.leaf td {
+    border: 1px solid #f00;
+    text-align: center;
+}
+
+.leaf-down td {
+    transform: rotate(180deg);
+}
+
+.lock-label {
+    display: inline-block;
+}
+
+.label-warning::before {
+    content: "⚠️";
+    display: inline-block;
+    margin-right: 0.25rem;
+    color: #f00;
+}

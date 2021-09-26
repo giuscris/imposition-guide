@@ -1,0 +1,86 @@
+:root {
+    --A3-width: 13.92rem;
+    --A3-height: 19.69rem;
+    --A4-width: calc(var(--A3-height) / 2);
+    --A4-height: var(--A3-width);
+    --B3-width: 16.61rem;
+    --B3-height: 23.44rem;
+    --B4-width: calc(var(--B3-height) / 2);
+    --B4-height: var(--B3-width);
+    --letter-width: 10.125rem;
+    --letter-height: 13.08rem;
+    --legal-width: var(--letter-width);
+    --legal-height: 16.69rem;
+    --tabloid-width: var(--letter-height);
+    --tabloid-height: calc(var(--letter-width) * 2);
+}
+
+.size-A3 {
+    width: var(--A3-width);
+    height: var(--A3-height);
+}
+
+.size-A3.orientation-h {
+    width: var(--A3-height);
+    height: var(--A3-width);
+}
+
+.size-A4 {
+    width: var(--A4-width);
+    height: var(--A4-height);
+}
+
+.size-A4.orientation-h {
+    width: var(--A4-height);
+    height: var(--A4-width);
+}
+
+.size-B3 {
+    width: var(--B3-width);
+    height: var(--B3-height);
+}
+
+.size-B3.orientation-h {
+    width: var(--B3-height);
+    height: var(--B3-width);
+}
+
+.size-B4 {
+    width: var(--B4-width);
+    height: var(--B4-height);
+}
+
+.size-B4.orientation-h {
+    width: var(--B4-height);
+    height: var(--B4-width);
+}
+
+.size-letter {
+    width: var(--letter-width);
+    height: var(--letter-height);
+}
+
+.size-letter.orientation-h {
+    width: var(--letter-height);
+    height: var(--letter-width);
+}
+
+.size-legal {
+    width: var(--legal-width);
+    height: var(--legal-height);
+}
+
+.size-legal.orientation-h {
+    width: var(--legal-height);
+    height: var(--legal-width);
+}
+
+.size-tabloid {
+    width: var(--tabloid-width);
+    height: var(--tabloid-height);
+}
+
+.size-tabloid.orientation-h {
+    width: var(--tabloid-height);
+    height: var(--tabloid-width);
+}

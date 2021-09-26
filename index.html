@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>📔 Imposition Guide</title>
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/paper-size.css">
+    </head>
+    <body>
+        <div class="header"><h1>📔 Imposition Guide</h1></div>
+        <div class="container">
+            <div class="view"></div>
+            <div class="controls">
+                <label for="pages">Pages:</label>
+                <input type="range" min="8" max="400" step="8" value="16" id="pages"> <span class="range-label" data-for="pages">16</span>
+                <label for="pagesPerSheet">Pages per sheet:</label>
+                <input type="range" value="2" id="pagesPerSheet"> <span class="range-label" data-for="pagesPerSheet">8</span>
+                <details>
+                    <summary>Options</summary>
+                    <fieldset>
+                        <legend id="signaturesLegend">Signatures</legend>
+                        <label for="signatures">Number of signatures: <label class="lock-label"><input type="checkbox" id="lockSignatures">🔒</label></label>
+                        <input type="range" min="1" max="1" value="1" id="signatures"> <span class="range-label" data-for="signatures">1</span>
+                        <label for="maxSheets">Max sheets/signature: <label class="lock-label"><input type="checkbox" id="lockMaxSheets">🔒</label></label>
+                        <input type="range" min="1" max="12" value="6" id="maxSheets"> <span class="range-label" data-for="maxSheets">3</span>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Binding style</legend>
+                        <label><input type="radio" name="bindingStyle" id="perfectBinding"> Perfect binding</label>
+                        <label><input type="radio" name="bindingStyle" id="saddleBinding"> Saddle binding</label>
+                        <label><input type="radio" name="bindingStyle" id="mixedBinding" checked> Mixed (nested saddle)</label>
+                        <label><input type="checkbox" id="foldTogether"> Fold sheets together</label>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Other</legend>
+                        <label for="paperSize">Paper size:</label>
+                        <select id="paperSize">
+                            <optgroup label="ISO 216">
+                                <option value="A3">A3 · 297×420 mm</option>
+                                <option value="A4" selected>A4 · 210×297 mm</option>
+                                <option value="B3">B3 · 353×500 mm</option>
+                                <option value="B4">B4 · 250×353 mm</option>
+                            </optgroup>
+                            <optgroup label="North American">
+                                <option value="letter">Letter · 8½×11 inch</option>
+                                <option value="legal">Legal · 8½×14 inch</option>
+                                <option value="tabloid">Tabloid · 17×11 inch</option>
+                            </optgroup>
+                        </select>
+                        <label>Max bindable sheets: <input type="number" min="2" value="20" id="maxBindableSheets"></label>
+                        <label>Max foldable layers: <input type="number" min="2" value="32" id="maxFoldableLayers"></label>
+                    </fieldset>
+                </details>
+            </div>
+        </div>
+        <script type="module" src="assets/js/script.js"></script>
+    </body>
+</html>
