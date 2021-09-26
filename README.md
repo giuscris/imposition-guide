@@ -10,4 +10,6 @@
 - ➕ Possibility to impose sheets to be fold together.
 - 🔢 Customizable number of sheets foldable or bindable at once.
 
+***
+
 ![](assets/images/imposition-animation.gif)
