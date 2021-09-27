@@ -31,13 +31,7 @@ export default function View(container, controls) {
 
     const signaturesLegend = controls.querySelector("#signaturesLegend");
 
-    let frozenBindingStyle = null;
-
-    function setBindingStyle(style) {
-        inputs.perfectBinding.checked = style === 'perfect';
-        inputs.saddleBinding.checked = style === 'saddle';
-        inputs.mixedBinding.checked = style === 'mixed';
-    }
+    let prevBindingStyle = null;
 
     function getBindingStyle() {
         if (inputs.perfectBinding.checked) {
@@ -53,97 +47,110 @@ export default function View(container, controls) {
         }
     }
 
+    function setBindingStyle(style) {
+        inputs.perfectBinding.checked = style === "perfect";
+        inputs.saddleBinding.checked = style === "saddle";
+        inputs.mixedBinding.checked = style === "mixed";
+    }
+
     function handleControls() {
-        const maxBindableSheets = parseInt(inputs.maxBindableSheets.value);
-        const maxFoldableLayers = parseInt(inputs.maxFoldableLayers.value);
+        // Get `pages` value before it's altered from `min` and `step` properties
+        const prevPages = parseInt(inputs.pages.value);
 
+        // Handle `pagesPerSheet` input
         const pagesPerSheetValue = parseInt(availablePagesPerSheet[inputs.pagesPerSheet.value]);
-
         inputs.pagesPerSheet.max = availablePagesPerSheet.length - 1;
+        rangeLabels.pagesPerSheet.innerHTML = pagesPerSheetValue;
 
+        // Handle `pages` input
+        inputs.pages.min = pagesPerSheetValue;
+        inputs.pages.step = pagesPerSheetValue;
+        rangeLabels.pages.innerHTML = inputs.pages.value;
+
+        // Set `pages` value based on `pagesPerSheet`
         if (this === inputs.pagesPerSheet) {
-            // It's important to get the value before it's altered
-            const prevPages = parseInt(inputs.pages.value);
-
-            inputs.pages.min = pagesPerSheetValue;
-            inputs.pages.step = pagesPerSheetValue;
             inputs.pages.value = nextMultiple(pagesPerSheetValue, prevPages);
-
-            if (pagesPerSheetValue === 2) {
-                frozenBindingStyle = getBindingStyle();
-                setBindingStyle("perfect");
-                inputs.saddleBinding.disabled = true;
-                inputs.mixedBinding.disabled = true;
-            } else {
-                if (frozenBindingStyle !== null) {
-                    setBindingStyle(frozenBindingStyle);
-                    frozenBindingStyle = null;
-                }
-                inputs.saddleBinding.disabled = false;
-                inputs.mixedBinding.disabled = false;
-            }
         }
 
-        const sheets = parseInt(inputs.pages.value) / pagesPerSheetValue;
+        // Handle binding style inputs
 
+        // Special case for 2-up imposition: enforce perfect binding but keep previous style
+        const is2up = pagesPerSheetValue === 2;
+        inputs.saddleBinding.disabled = is2up;
+        inputs.mixedBinding.disabled = is2up;
+
+        if (is2up) {
+            prevBindingStyle = getBindingStyle();
+            setBindingStyle("perfect");
+        } else if (prevBindingStyle !== null) {
+            setBindingStyle(prevBindingStyle);
+            prevBindingStyle = null;
+        }
+
+        inputs.foldTogether.disabled = inputs.perfectBinding.checked;
+
+        // Handle `signatures` and `maxSheets` inputs
+
+        // Set maximum for `signatures`
+        const sheets = parseInt(inputs.pages.value) / pagesPerSheetValue;
+        inputs.signatures.max = sheets;
+
+        // Set maximum for `maxSheets`
         const layers = Math.ceil(pagesPerSheetValue / 4);
+        const maxBindableSheets = parseInt(inputs.maxBindableSheets.value);
         let maxSheets = Math.floor(maxBindableSheets / layers);
 
+        // Special case for folding together sheets
         if (inputs.foldTogether.checked) {
             const folds = Math.max(0, Math.ceil(Math.log2(pagesPerSheetValue)) - 1);
+            const maxFoldableLayers = parseInt(inputs.maxFoldableLayers.value);
             maxSheets = Math.min(maxSheets, Math.floor(maxFoldableLayers / 2 ** folds));
         }
 
-        inputs.signatures.max = sheets;
-
         inputs.maxSheets.max = maxSheets;
 
-        if (this !== inputs.maxSheets && this !== inputs.signatures) {
-            if (inputs.perfectBinding.checked) {
-                inputs.maxSheets.value = 1;
-                inputs.signatures.value = sheets;
-                inputs.maxSheets.disabled = true;
-                inputs.signatures.disabled = true;
-                inputs.lockSignatures.disabled = true;
-                inputs.lockMaxSheets.disabled = true;
-                inputs.foldTogether.disabled = true;
-            }
+        // Set `signatures` and `maxSheets` depending on binding style
+        if (inputs.perfectBinding.checked) {
+            inputs.signatures.value = sheets;
+            inputs.maxSheets.value = 1;
+        }
 
-            if (inputs.saddleBinding.checked) {
-                inputs.maxSheets.value = maxSheets;
-                inputs.signatures.value = 1;
-                inputs.maxSheets.disabled = true;
-                inputs.signatures.disabled = true;
-                inputs.lockSignatures.disabled = true;
-                inputs.lockMaxSheets.disabled = true;
-                inputs.foldTogether.disabled = false;
-            }
+        if (inputs.saddleBinding.checked) {
+            inputs.signatures.value = 1;
+            inputs.maxSheets.value = maxSheets;
+        }
 
-            if (inputs.mixedBinding.checked) {
-                if (!inputs.lockMaxSheets.checked) {
-                    inputs.maxSheets.value = Math.ceil(maxSheets / 2);
-                }
-                if (!inputs.lockSignatures.checked) {
-                    inputs.signatures.value = Math.ceil(sheets / inputs.maxSheets.value);
-                }
-                inputs.maxSheets.disabled = false;
-                inputs.signatures.disabled = false;
-                inputs.lockSignatures.disabled = false;
-                inputs.lockMaxSheets.disabled = false;
-                inputs.foldTogether.disabled = false;
+        if (inputs.mixedBinding.checked
+            && this !== undefined  // `this !== undefined` is true when calling function outside `addEventListener()`
+            && this !== inputs.signatures && this !== inputs.maxSheets) {
+            if (!inputs.lockMaxSheets.checked) {
+                inputs.maxSheets.value = Math.ceil(maxSheets / 2);
+            }
+            if (!inputs.lockSignatures.checked) {
+                // This has to come after `maxSheets` is set
+                inputs.signatures.value = Math.ceil(sheets / inputs.maxSheets.value);
             }
         }
 
+        // Turn on a warning when `signatures` is below the optimal value
         if (inputs.signatures.value < Math.ceil(sheets / inputs.maxSheets.value)) {
             signaturesLegend.className = "label-warning";
         } else {
             signaturesLegend.className = "";
         }
 
-        rangeLabels.pages.innerHTML = inputs.pages.value;
-        rangeLabels.pagesPerSheet.innerHTML = pagesPerSheetValue;
         rangeLabels.signatures.innerHTML = inputs.signatures.value;
         rangeLabels.maxSheets.innerHTML = inputs.maxSheets.value;
+
+        // Disable `signatures` and `maxSheets` when the binding style is not mixed
+
+        inputs.signatures.disabled = !inputs.mixedBinding.checked;
+        inputs.lockSignatures.disabled = !inputs.mixedBinding.checked;
+
+        inputs.maxSheets.disabled = !inputs.mixedBinding.checked;
+        inputs.lockMaxSheets.disabled = !inputs.mixedBinding.checked;
+
+        // Finally generate and render booklet
 
         const booklet = makeBooklet(parseInt(inputs.pages.value), {
             pagesPerSheet: pagesPerSheetValue,
@@ -154,10 +161,10 @@ export default function View(container, controls) {
         container.innerHTML = renderBooklet(booklet, inputs.paperSize.value);
     }
 
-    Object.keys(inputs).forEach(function (key) {
+    for (const key of Object.keys(inputs)) {
         const element = inputs[key];
         element.addEventListener("input", handleControls);
-    });
+    }
 
     handleControls();
 }
