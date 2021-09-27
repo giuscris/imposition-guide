@@ -2,6 +2,7 @@ import {instructions} from "./instructions.js";
 import {nextMultiple} from "./math.js";
 import {makeBooklet} from "./imposition.js";
 import {renderBooklet} from "./render.js";
+import {isEqualObject} from "./object.js";
 
 export default function View(container, controls) {
     const availablePagesPerSheet = Object.keys(instructions);
@@ -30,6 +31,58 @@ export default function View(container, controls) {
     };
 
     const signaturesLegend = controls.querySelector("#signaturesLegend");
+
+    function getStatus() {
+        return {
+            pages: inputs.pages.value,
+            pagesPerSheet: availablePagesPerSheet[inputs.pagesPerSheet.value],
+            signatures: inputs.signatures.value,
+            maxSheets: inputs.maxSheets.value,
+            bindingStyle: getBindingStyle(),
+            foldTogether: inputs.foldTogether.checked,
+            paperSize: inputs.paperSize.value,
+            maxBindableSheets: inputs.maxBindableSheets.value,
+            maxFoldableLayers: inputs.maxFoldableLayers.value
+        };
+    }
+
+    function setStatus(status) {
+        for (const [key, value] of Object.entries(status)) {
+            switch (key) {
+                case "pagesPerSheet":
+                    inputs.pagesPerSheet.value = availablePagesPerSheet.indexOf(value);
+                    break;
+                case "bindingStyle":
+                    setBindingStyle(value);
+                    break;
+                case "foldTogether":
+                    inputs.foldTogether.checked = value === true || value === "true";
+                    break;
+                default:
+                    if (inputs.hasOwnProperty(key)) {
+                        inputs[key].value = value;
+                    }
+            }
+        }
+    }
+
+    function getStatusFromHash() {
+        if (!window.location.hash || !("URLSearchParams" in window)) {
+            return {};
+        }
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        return Object.fromEntries(params);
+    }
+
+    function setStatusToHash() {
+        if (!("URLSearchParams" in window)) {
+            return;
+        }
+        const params = new URLSearchParams(getStatus());
+        window.location.hash = params.toString();
+    }
+
+    const defaultStatus = getStatus();
 
     let prevBindingStyle = null;
 
@@ -159,12 +212,21 @@ export default function View(container, controls) {
         });
 
         container.innerHTML = renderBooklet(booklet, inputs.paperSize.value);
+
+        // Update location hash
+        if (!isEqualObject(getStatus(), defaultStatus)) {
+            setStatusToHash();
+        } else {
+            window.location.hash = "";
+        }
     }
 
     for (const key of Object.keys(inputs)) {
         const element = inputs[key];
         element.addEventListener("input", handleControls);
     }
+
+    setStatus(getStatusFromHash());
 
     handleControls();
 }
