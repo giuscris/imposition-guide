@@ -24,10 +24,10 @@ export default function View(container, controls) {
     };
 
     const rangeLabels = {
-        pages: controls.querySelector(".range-label[data-for=pages]"),
-        pagesPerSheet: controls.querySelector(".range-label[data-for=pagesPerSheet]"),
-        signatures: controls.querySelector(".range-label[data-for=signatures]"),
-        maxSheets: controls.querySelector(".range-label[data-for=maxSheets]")
+        pages: controls.querySelector("output[for=pages]"),
+        pagesPerSheet: controls.querySelector("output[for=pagesPerSheet]"),
+        signatures: controls.querySelector("output[for=signatures]"),
+        maxSheets: controls.querySelector("output[for=maxSheets]")
     };
 
     const signaturesLegend = controls.querySelector("#signaturesLegend");
