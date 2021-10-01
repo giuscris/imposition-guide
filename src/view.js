@@ -37,7 +37,9 @@ export default function View(container, controls) {
             pages: inputs.pages.value,
             pagesPerSheet: availablePagesPerSheet[inputs.pagesPerSheet.value],
             signatures: inputs.signatures.value,
+            lockSignatures: inputs.lockSignatures.checked,
             maxSheets: inputs.maxSheets.value,
+            lockMaxSheets: inputs.lockMaxSheets.checked,
             bindingStyle: getBindingStyle(),
             foldTogether: inputs.foldTogether.checked,
             paperSize: inputs.paperSize.value,
@@ -55,12 +57,14 @@ export default function View(container, controls) {
                 case "bindingStyle":
                     setBindingStyle(value);
                     break;
-                case "foldTogether":
-                    inputs.foldTogether.checked = value === true || value === "true";
-                    break;
                 default:
                     if (inputs.hasOwnProperty(key)) {
-                        inputs[key].value = value;
+                        const input = inputs[key];
+                        if (input.type === "checkbox" || input.type === "radio") {
+                            input.checked = value === "true";
+                        } else {
+                            input.value = value;
+                        }
                     }
             }
         }
