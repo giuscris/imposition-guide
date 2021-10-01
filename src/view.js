@@ -97,7 +97,7 @@ export default function View(container, controls) {
         // Handle binding style inputs
 
         // Special case for 2-up imposition: enforce perfect binding but keep previous style
-        const is2up = inputs.pagesPerSheet.value === 2;
+        const is2up = parseInt(inputs.pagesPerSheet.value) === 2;
 
         // Disable all `bindingStyle` radio buttons except perfect binding depending on 2-up imposition
         for (const option of inputs.bindingStyle) {
