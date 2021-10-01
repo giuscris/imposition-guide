@@ -180,8 +180,10 @@ export default function View(container, controls) {
 
         // Finally generate and render booklet
 
-        const booklet = makeBooklet(parseInt(inputs.pages.value), {
+        const booklet = makeBooklet({
+            pages: parseInt(inputs.pages.value),
             pagesPerSheet: pagesPerSheetValue,
+            instructions: instructions[pagesPerSheetValue],
             signatures: parseInt(inputs.signatures.value),
             foldTogether: inputs.foldTogether.checked
         });
