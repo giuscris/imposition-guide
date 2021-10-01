@@ -5,13 +5,10 @@ import {renderBooklet} from "./render.js";
 import {isEqualObject} from "./object.js";
 
 export default function View(container, controls) {
-    const availablePagesPerSheet = Object.keys(instructions);
-
     const inputs = controls.elements;
 
     const rangeLabels = {
         pages: controls.querySelector("output[for=pages]"),
-        pagesPerSheet: controls.querySelector("output[for=pagesPerSheet]"),
         signatures: controls.querySelector("output[for=signatures]"),
         maxSheets: controls.querySelector("output[for=maxSheets]")
     };
@@ -21,7 +18,7 @@ export default function View(container, controls) {
     function getStatus() {
         return {
             pages: inputs.pages.value,
-            pagesPerSheet: availablePagesPerSheet[inputs.pagesPerSheet.value],
+            pagesPerSheet: inputs.pagesPerSheet.value,
             signatures: inputs.signatures.value,
             lockSignatures: inputs.lockSignatures.checked,
             maxSheets: inputs.maxSheets.value,
@@ -36,19 +33,13 @@ export default function View(container, controls) {
 
     function setStatus(status) {
         for (const [key, value] of Object.entries(status)) {
-            switch (key) {
-                case "pagesPerSheet":
-                    inputs.pagesPerSheet.value = availablePagesPerSheet.indexOf(value);
-                    break;
-                default:
-                    if (inputs.hasOwnProperty(key)) {
-                        const input = inputs[key];
-                        if (input.type === "checkbox" || input.type === "radio") {
-                            input.checked = value === "true";
-                        } else {
-                            input.value = value;
-                        }
-                    }
+            if (inputs.hasOwnProperty(key)) {
+                const input = inputs[key];
+                if (input.type === "checkbox" || input.type === "radio") {
+                    input.checked = value === "true";
+                } else {
+                    input.value = value;
+                }
             }
         }
     }
@@ -77,25 +68,21 @@ export default function View(container, controls) {
         // Get `pages` value before it's altered from `min` and `step` properties
         const prevPages = parseInt(inputs.pages.value);
 
-        // Handle `pagesPerSheet` input
-        const pagesPerSheetValue = parseInt(availablePagesPerSheet[inputs.pagesPerSheet.value]);
-        inputs.pagesPerSheet.max = availablePagesPerSheet.length - 1;
-        rangeLabels.pagesPerSheet.innerHTML = pagesPerSheetValue;
-
         // Handle `pages` input
-        inputs.pages.min = pagesPerSheetValue;
-        inputs.pages.step = pagesPerSheetValue;
-        rangeLabels.pages.innerHTML = inputs.pages.value;
+        inputs.pages.min = inputs.pagesPerSheet.value;
+        inputs.pages.step = inputs.pagesPerSheet.value;
 
         // Set `pages` value based on `pagesPerSheet`
         if (this === inputs.pagesPerSheet) {
-            inputs.pages.value = nextMultiple(pagesPerSheetValue, prevPages);
+            inputs.pages.value = nextMultiple(parseInt(inputs.pagesPerSheet.value), prevPages);
         }
+
+        rangeLabels.pages.innerHTML = inputs.pages.value;
 
         // Handle binding style inputs
 
         // Special case for 2-up imposition: enforce perfect binding but keep previous style
-        const is2up = pagesPerSheetValue === 2;
+        const is2up = inputs.pagesPerSheet.value === 2;
 
         // Disable all `bindingStyle` radio buttons except perfect binding depending on 2-up imposition
         for (const option of inputs.bindingStyle) {
@@ -117,17 +104,17 @@ export default function View(container, controls) {
         // Handle `signatures` and `maxSheets` inputs
 
         // Set maximum for `signatures`
-        const sheets = parseInt(inputs.pages.value) / pagesPerSheetValue;
+        const sheets = parseInt(inputs.pages.value) / inputs.pagesPerSheet.value;
         inputs.signatures.max = sheets;
 
         // Set maximum for `maxSheets`
-        const layers = Math.ceil(pagesPerSheetValue / 4);
+        const layers = Math.ceil(inputs.pagesPerSheet.value / 4);
         const maxBindableSheets = parseInt(inputs.maxBindableSheets.value);
         let maxSheets = Math.floor(maxBindableSheets / layers);
 
         // Special case for folding together sheets
         if (inputs.foldTogether.checked) {
-            const folds = Math.max(0, Math.ceil(Math.log2(pagesPerSheetValue)) - 1);
+            const folds = Math.max(0, Math.ceil(Math.log2(inputs.pagesPerSheet.value)) - 1);
             const maxFoldableLayers = parseInt(inputs.maxFoldableLayers.value);
             maxSheets = Math.min(maxSheets, Math.floor(maxFoldableLayers / 2 ** folds));
         }
@@ -182,8 +169,8 @@ export default function View(container, controls) {
 
         const booklet = makeBooklet({
             pages: parseInt(inputs.pages.value),
-            pagesPerSheet: pagesPerSheetValue,
-            instructions: instructions[pagesPerSheetValue],
+            pagesPerSheet: inputs.pagesPerSheet.value,
+            instructions: instructions[inputs.pagesPerSheet.value],
             signatures: parseInt(inputs.signatures.value),
             foldTogether: inputs.foldTogether.checked
         });

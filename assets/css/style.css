@@ -15,6 +15,7 @@ input[type="number"] {
 
 select {
     font-size: 0.875rem;
+    min-width: 12rem;
 }
 
 label {

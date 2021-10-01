@@ -14,7 +14,16 @@
                 <label for="pages">Pages:</label>
                 <input type="range" min="2" max="400" value="16" name="pages"> <output for="pages">16</output>
                 <label for="pagesPerSheet">Pages per sheet:</label>
-                <input type="range" value="2" name="pagesPerSheet"> <output for="pagesPerSheet">8</output>
+                <select name="pagesPerSheet">
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8" selected>8</option>
+                    <option value="12">12</option>
+                    <option value="16">16</option>
+                    <option value="24">24</option>
+                    <option value="32">32</option>
+                    <option value="36">36</option>
+                </select>
                 <details>
                     <summary>Options</summary>
                     <fieldset>
