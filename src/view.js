@@ -13,12 +13,15 @@ export default function View(container, controls) {
         maxSheets: controls.querySelector("output[for=maxSheets]")
     };
 
+    const optionsDetails = controls.querySelector('#options');
+
     const signaturesLegend = controls.querySelector("#signaturesLegend");
 
     function getStatus() {
         return {
             pages: inputs.pages.value,
             pagesPerSheet: inputs.pagesPerSheet.value,
+            optionsOpen: optionsDetails.open,
             signatures: inputs.signatures.value,
             lockSignatures: inputs.lockSignatures.checked,
             maxSheets: inputs.maxSheets.value,
@@ -41,6 +44,10 @@ export default function View(container, controls) {
                     input.value = value;
                 }
             }
+
+            if (key === "optionsOpen") {
+                optionsDetails.open = value === "true";
+            }
         }
     }
 
@@ -58,6 +65,14 @@ export default function View(container, controls) {
         }
         const params = new URLSearchParams(getStatus());
         window.location.hash = params.toString();
+    }
+
+    function updateHash() {
+        if (!isEqualObject(getStatus(), defaultStatus)) {
+            setStatusToHash();
+        } else {
+            window.location.hash = "";
+        }
     }
 
     const defaultStatus = getStatus();
@@ -178,11 +193,7 @@ export default function View(container, controls) {
         container.innerHTML = renderBooklet(booklet, inputs.paperSize.value);
 
         // Update location hash
-        if (!isEqualObject(getStatus(), defaultStatus)) {
-            setStatusToHash();
-        } else {
-            window.location.hash = "";
-        }
+        updateHash();
     }
 
     for (const input of inputs) {
@@ -192,6 +203,8 @@ export default function View(container, controls) {
             input.addEventListener("input", handleControls);
         }
     }
+
+    optionsDetails.addEventListener("toggle", updateHash);
 
     setStatus(getStatusFromHash());
 
