@@ -10,31 +10,31 @@
         <div class="header"><h1>📔 Imposition Guide</h1></div>
         <div class="container">
             <div class="view"></div>
-            <div class="controls">
+            <form class="controls">
                 <label for="pages">Pages:</label>
-                <input type="range" min="2" max="400" value="16" id="pages"> <output for="pages">16</output>
+                <input type="range" min="2" max="400" value="16" name="pages"> <output for="pages">16</output>
                 <label for="pagesPerSheet">Pages per sheet:</label>
-                <input type="range" value="2" id="pagesPerSheet"> <output for="pagesPerSheet">8</output>
+                <input type="range" value="2" name="pagesPerSheet"> <output for="pagesPerSheet">8</output>
                 <details>
                     <summary>Options</summary>
                     <fieldset>
                         <legend id="signaturesLegend">Signatures</legend>
-                        <label for="signatures">Number of signatures: <label class="lock-label"><input type="checkbox" id="lockSignatures">🔒</label></label>
-                        <input type="range" min="1" value="1" id="signatures"> <output for="signatures">1</output>
-                        <label for="maxSheets">Max sheets/signature: <label class="lock-label"><input type="checkbox" id="lockMaxSheets">🔒</label></label>
-                        <input type="range" min="1" value="5" id="maxSheets"> <output for="maxSheets">3</output>
+                        <label for="signatures">Number of signatures: <label class="lock-label"><input type="checkbox" name="lockSignatures">🔒</label></label>
+                        <input type="range" min="1" value="1" name="signatures"> <output for="signatures">1</output>
+                        <label for="maxSheets">Max sheets/signature: <label class="lock-label"><input type="checkbox" name="lockMaxSheets">🔒</label></label>
+                        <input type="range" min="1" value="5" name="maxSheets"> <output for="maxSheets">3</output>
                     </fieldset>
                     <fieldset>
                         <legend>Binding style</legend>
-                        <label><input type="radio" name="bindingStyle" id="perfectBinding"> Perfect binding</label>
-                        <label><input type="radio" name="bindingStyle" id="saddleBinding"> Saddle binding</label>
-                        <label><input type="radio" name="bindingStyle" id="mixedBinding" checked> Mixed (nested saddle)</label>
-                        <label><input type="checkbox" id="foldTogether"> Fold sheets together</label>
+                        <label><input type="radio" name="bindingStyle" value="perfectBinding"> Perfect binding</label>
+                        <label><input type="radio" name="bindingStyle" value="saddleBinding"> Saddle binding</label>
+                        <label><input type="radio" name="bindingStyle" value="mixedBinding" checked> Mixed (nested saddle)</label>
+                        <label><input type="checkbox" name="foldTogether"> Fold sheets together</label>
                     </fieldset>
                     <fieldset>
                         <legend>Other</legend>
                         <label for="paperSize">Paper size:</label>
-                        <select id="paperSize">
+                        <select name="paperSize">
                             <optgroup label="ISO 216">
                                 <option value="A3">A3 · 297×420 mm</option>
                                 <option value="A4" selected>A4 · 210×297 mm</option>
@@ -47,11 +47,11 @@
                                 <option value="tabloid">Tabloid · 17×11 inch</option>
                             </optgroup>
                         </select>
-                        <label>Max bindable sheets: <input type="number" min="2" value="20" id="maxBindableSheets"></label>
-                        <label>Max foldable layers: <input type="number" min="2" value="32" id="maxFoldableLayers"></label>
+                        <label>Max bindable sheets: <input type="number" min="2" value="20" name="maxBindableSheets"></label>
+                        <label>Max foldable layers: <input type="number" min="2" value="32" name="maxFoldableLayers"></label>
                     </fieldset>
                 </details>
-            </div>
+            </form>
         </div>
         <script type="module" src="assets/js/script.js"></script>
     </body>

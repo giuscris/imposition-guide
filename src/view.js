@@ -7,21 +7,7 @@ import {isEqualObject} from "./object.js";
 export default function View(container, controls) {
     const availablePagesPerSheet = Object.keys(instructions);
 
-    const inputs = {
-        pages: controls.querySelector("#pages"),
-        pagesPerSheet: controls.querySelector("#pagesPerSheet"),
-        signatures: controls.querySelector("#signatures"),
-        lockSignatures: controls.querySelector("#lockSignatures"),
-        maxSheets: controls.querySelector("#maxSheets"),
-        lockMaxSheets: controls.querySelector("#lockMaxSheets"),
-        foldTogether: controls.querySelector("#foldTogether"),
-        perfectBinding: controls.querySelector("#perfectBinding"),
-        saddleBinding: controls.querySelector("#saddleBinding"),
-        mixedBinding: controls.querySelector("#mixedBinding"),
-        paperSize: controls.querySelector("#paperSize"),
-        maxBindableSheets: controls.querySelector("#maxBindableSheets"),
-        maxFoldableLayers: controls.querySelector("#maxFoldableLayers")
-    };
+    const inputs = controls.elements;
 
     const rangeLabels = {
         pages: controls.querySelector("output[for=pages]"),
@@ -40,7 +26,7 @@ export default function View(container, controls) {
             lockSignatures: inputs.lockSignatures.checked,
             maxSheets: inputs.maxSheets.value,
             lockMaxSheets: inputs.lockMaxSheets.checked,
-            bindingStyle: getBindingStyle(),
+            bindingStyle: inputs.bindingStyle.value,
             foldTogether: inputs.foldTogether.checked,
             paperSize: inputs.paperSize.value,
             maxBindableSheets: inputs.maxBindableSheets.value,
@@ -53,9 +39,6 @@ export default function View(container, controls) {
             switch (key) {
                 case "pagesPerSheet":
                     inputs.pagesPerSheet.value = availablePagesPerSheet.indexOf(value);
-                    break;
-                case "bindingStyle":
-                    setBindingStyle(value);
                     break;
                 default:
                     if (inputs.hasOwnProperty(key)) {
@@ -90,26 +73,6 @@ export default function View(container, controls) {
 
     let prevBindingStyle = null;
 
-    function getBindingStyle() {
-        if (inputs.perfectBinding.checked) {
-            return "perfect";
-        }
-
-        if (inputs.saddleBinding.checked) {
-            return "saddle";
-        }
-
-        if (inputs.mixedBinding.checked) {
-            return "mixed";
-        }
-    }
-
-    function setBindingStyle(style) {
-        inputs.perfectBinding.checked = style === "perfect";
-        inputs.saddleBinding.checked = style === "saddle";
-        inputs.mixedBinding.checked = style === "mixed";
-    }
-
     function handleControls() {
         // Get `pages` value before it's altered from `min` and `step` properties
         const prevPages = parseInt(inputs.pages.value);
@@ -133,18 +96,23 @@ export default function View(container, controls) {
 
         // Special case for 2-up imposition: enforce perfect binding but keep previous style
         const is2up = pagesPerSheetValue === 2;
-        inputs.saddleBinding.disabled = is2up;
-        inputs.mixedBinding.disabled = is2up;
+
+        // Disable all `bindingStyle` radio buttons except perfect binding depending on 2-up imposition
+        for (const option of inputs.bindingStyle) {
+            if (option.value !== "perfectBinding") {
+                option.disabled = is2up;
+            }
+        }
 
         if (is2up) {
-            prevBindingStyle = getBindingStyle();
-            setBindingStyle("perfect");
+            prevBindingStyle = controls.bindingStyle.value;
+            controls.bindingStyle.value = "perfectBinding";
         } else if (prevBindingStyle !== null) {
-            setBindingStyle(prevBindingStyle);
+            controls.bindingStyle.value = prevBindingStyle;
             prevBindingStyle = null;
         }
 
-        inputs.foldTogether.disabled = inputs.perfectBinding.checked;
+        inputs.foldTogether.disabled = inputs.bindingStyle.value === "perfectBinding";
 
         // Handle `signatures` and `maxSheets` inputs
 
@@ -167,26 +135,29 @@ export default function View(container, controls) {
         inputs.maxSheets.max = maxSheets;
 
         // Set `signatures` and `maxSheets` depending on binding style
-        if (inputs.perfectBinding.checked) {
-            inputs.signatures.value = sheets;
-            inputs.maxSheets.value = 1;
-        }
+        switch (inputs.bindingStyle.value) {
+            case "perfectBinding":
+                inputs.signatures.value = sheets;
+                inputs.maxSheets.value = 1;
+                break;
 
-        if (inputs.saddleBinding.checked) {
-            inputs.signatures.value = 1;
-            inputs.maxSheets.value = maxSheets;
-        }
+            case "saddleBinding":
+                inputs.signatures.value = 1;
+                inputs.maxSheets.value = maxSheets;
+                break;
 
-        if (inputs.mixedBinding.checked
-            && this !== undefined  // `this !== undefined` is true when calling function outside `addEventListener()`
-            && this !== inputs.signatures && this !== inputs.maxSheets) {
-            if (!inputs.lockMaxSheets.checked) {
-                inputs.maxSheets.value = Math.ceil(maxSheets / 2);
-            }
-            if (!inputs.lockSignatures.checked) {
-                // This has to come after `maxSheets` is set
-                inputs.signatures.value = Math.ceil(sheets / inputs.maxSheets.value);
-            }
+            case "mixedBinding":
+                if (this !== undefined  // `this !== undefined` is true when calling function outside `addEventListener()`
+                    && this !== inputs.signatures && this !== inputs.maxSheets) {
+                    if (!inputs.lockMaxSheets.checked) {
+                        inputs.maxSheets.value = Math.ceil(maxSheets / 2);
+                    }
+                    if (!inputs.lockSignatures.checked) {
+                        // This has to come after `maxSheets` is set
+                        inputs.signatures.value = Math.ceil(sheets / inputs.maxSheets.value);
+                    }
+                }
+                break;
         }
 
         // Turn on a warning when `signatures` is below the optimal value
@@ -201,11 +172,11 @@ export default function View(container, controls) {
 
         // Disable `signatures` and `maxSheets` when the binding style is not mixed
 
-        inputs.signatures.disabled = !inputs.mixedBinding.checked;
-        inputs.lockSignatures.disabled = !inputs.mixedBinding.checked;
+        inputs.signatures.disabled = inputs.bindingStyle.value !== "mixedBinding";
+        inputs.lockSignatures.disabled = inputs.bindingStyle.value !== "mixedBinding";
 
-        inputs.maxSheets.disabled = !inputs.mixedBinding.checked;
-        inputs.lockMaxSheets.disabled = !inputs.mixedBinding.checked;
+        inputs.maxSheets.disabled = inputs.bindingStyle.value !== "mixedBinding";
+        inputs.lockMaxSheets.disabled = inputs.bindingStyle.value !== "mixedBinding";
 
         // Finally generate and render booklet
 
@@ -225,9 +196,8 @@ export default function View(container, controls) {
         }
     }
 
-    for (const key of Object.keys(inputs)) {
-        const element = inputs[key];
-        element.addEventListener("input", handleControls);
+    for (const input of inputs) {
+        input.addEventListener("input", handleControls);
     }
 
     setStatus(getStatusFromHash());
