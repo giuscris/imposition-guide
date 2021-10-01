@@ -197,7 +197,11 @@ export default function View(container, controls) {
     }
 
     for (const input of inputs) {
-        input.addEventListener("input", handleControls);
+        const tagName = input.tagName.toLowerCase();
+        // Skip elements like `<output>` and `<fieldset>`
+        if (tagName === "input" || tagName === "select") {
+            input.addEventListener("input", handleControls);
+        }
     }
 
     setStatus(getStatusFromHash());
