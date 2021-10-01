@@ -123,16 +123,10 @@ export default function View(container, controls) {
         inputs.signatures.max = sheets;
 
         // Set maximum for `maxSheets`
-        const layers = Math.ceil(inputs.pagesPerSheet.value / 4);
-        const maxBindableSheets = parseInt(inputs.maxBindableSheets.value);
-        let maxSheets = Math.floor(maxBindableSheets / layers);
-
-        // Special case for folding together sheets
-        if (inputs.foldTogether.checked) {
-            const folds = Math.max(0, Math.ceil(Math.log2(inputs.pagesPerSheet.value)) - 1);
-            const maxFoldableLayers = parseInt(inputs.maxFoldableLayers.value);
-            maxSheets = Math.min(maxSheets, Math.floor(maxFoldableLayers / 2 ** folds));
-        }
+        const maxSheets = Math.min(
+            Math.floor(inputs.maxBindableSheets.value / Math.ceil(inputs.pagesPerSheet.value / 4)),
+            inputs.foldTogether.checked ? Math.floor(inputs.maxFoldableLayers.value / Math.ceil(inputs.pagesPerSheet.value / 2)) : Infinity
+        );
 
         inputs.maxSheets.max = maxSheets;
 
