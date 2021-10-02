@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <title>📔 Imposition Guide</title>
@@ -12,9 +12,9 @@
             <div class="view"></div>
             <form class="controls">
                 <label for="pages">Pages:</label>
-                <input type="range" min="2" max="400" value="16" name="pages"> <output for="pages">16</output>
+                <input type="range" min="2" max="400" value="16" id="pages" name="pages"> <output for="pages">16</output>
                 <label for="pagesPerSheet">Pages per sheet:</label>
-                <select name="pagesPerSheet">
+                <select id="pagesPerSheet" name="pagesPerSheet">
                     <option value="2">2</option>
                     <option value="4">4</option>
                     <option value="8" selected>8</option>
@@ -28,10 +28,12 @@
                     <summary>Options</summary>
                     <fieldset>
                         <legend id="signaturesLegend">Signatures</legend>
-                        <label for="signatures">Number of signatures: <label class="lock-label"><input type="checkbox" name="lockSignatures">🔒</label></label>
-                        <input type="range" min="1" value="1" name="signatures"> <output for="signatures">1</output>
-                        <label for="maxSheets">Max sheets/signature: <label class="lock-label"><input type="checkbox" name="lockMaxSheets">🔒</label></label>
-                        <input type="range" min="1" value="5" name="maxSheets"> <output for="maxSheets">3</output>
+                        <label for="signatures">Number of signatures:</label>
+                        <input type="range" min="1" value="1" id="signatures" name="signatures"> <output for="signatures">1</output>
+                        <label class="lock-label"><input type="checkbox" name="lockSignatures">🔒</label>
+                        <label for="maxSheets">Max sheets/signature:</label>
+                        <input type="range" min="1" value="5" id="maxSheets" name="maxSheets"> <output for="maxSheets">3</output>
+                        <label class="lock-label"><input type="checkbox" name="lockMaxSheets">🔒</label>
                     </fieldset>
                     <fieldset>
                         <legend>Binding style</legend>
@@ -43,7 +45,7 @@
                     <fieldset>
                         <legend>Other</legend>
                         <label for="paperSize">Paper size:</label>
-                        <select name="paperSize">
+                        <select id="paperSize" name="paperSize">
                             <optgroup label="ISO 216">
                                 <option value="A3">A3 · 297×420 mm</option>
                                 <option value="A4" selected>A4 · 210×297 mm</option>
